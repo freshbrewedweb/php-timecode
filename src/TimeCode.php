@@ -1,6 +1,6 @@
 <?php
 
-namespace Hunt;
+namespace Freshbrewedweb;
 
 class TimeCode {
 

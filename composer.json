@@ -1,5 +1,5 @@
 {
-    "name": "hunt/php-timecode",
+    "name": "freshbrewedweb/php-timecode",
     "description": "Easy management of timecodes",
     "type": "library",
     "license": "MIT",
@@ -11,7 +11,7 @@
     ],
     "autoload": {
         "psr-4": {
-            "Hunt\\": "src"
+            "Freshbrewedweb\\": "src"
         }
     },    
     "minimum-stability": "dev",
