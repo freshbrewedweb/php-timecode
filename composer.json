@@ -1,0 +1,19 @@
+{
+    "name": "hunt/php-timecode",
+    "description": "Easy management of timecodes",
+    "type": "library",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Greg Hunt",
+            "email": "freshbrewedweb@gmail.com"
+        }
+    ],
+    "autoload": {
+        "psr-4": {
+            "Hunt\\": "src"
+        }
+    },    
+    "minimum-stability": "dev",
+    "require": {}
+}
