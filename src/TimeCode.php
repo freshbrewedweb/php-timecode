@@ -34,6 +34,7 @@ class TimeCode {
     protected $unit;
 
     protected $format = '%02d:%02d:%02d.%03d';
+    protected $formatUnits = ['hours', 'minutes', 'seconds', 'milliseconds'];
 
     /**
      * Timecode units
@@ -74,6 +75,12 @@ class TimeCode {
         $this->time = $ns;
     }
 
+    public function setUnits( array $units )
+    {
+        $this->formatUnits = $units;
+        return $this;
+    }
+
     public function setFormat( string $format )
     {
         $this->format = $format;
@@ -82,13 +89,12 @@ class TimeCode {
 
     public function get()
     {
-        return sprintf(
-            $this->format,
-            $this->hours,
-            $this->minutes,
-            $this->seconds,
-            $this->milliseconds
-        );
+        $args = [$this->format];
+        foreach( $this->formatUnits as $unit ) {
+            $args[] = $this->{$unit};
+        }
+
+        return call_user_func_array('sprintf', $args);
     }
 
     private function toNanoseconds( $t, $u ) {
