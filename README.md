@@ -25,3 +25,8 @@ echo $timecode->minutes;
 echo $timecode->seconds;
 // 42
 ```
+
+We can go the other direction too:
+```php
+$timecode = Timecode::fromString('00:18:42.000');
+```

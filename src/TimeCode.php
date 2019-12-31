@@ -26,6 +26,8 @@ class TimeCode {
         'weeks' => ['week', 'w', 'weeks'],
     ];
 
+    protected $string;
+
     /**
      * Converted to nanoseconds since
      * it's the atomic unit.
@@ -47,7 +49,7 @@ class TimeCode {
     protected $days;
     protected $weeks;
 
-    public function __construct( int $time, string $unit = 'milliseconds' )
+    public function __construct( int $time = 0, string $unit = 'milliseconds' )
     {
         $this->unit = $this->sanitizeUnit( $unit );
         $this->atomicTime($time);
@@ -69,9 +71,18 @@ class TimeCode {
      * nanoseconds, since this is our 
      * atomic unit of time.
      */
-    public function atomicTime( $time )
+    public function atomicTime( $time = null )
     {
-        $ns = $this->toNanoseconds($time, $this->unit);
+        $ns = 0;
+
+        if( is_null($time) ) {
+            foreach (array_keys(self::UNIT_FACTORS) as $unit) {
+                $ns = $ns + $this->toNanoseconds($this->{$unit}, $unit);
+            }
+        } else {
+            $ns = $this->toNanoseconds($time, $this->unit);
+        }
+
         $this->time = $ns;
     }
 
@@ -87,6 +98,11 @@ class TimeCode {
         return $this;
     }
 
+    public function set( $property, $value )
+    {
+        $this->{$property} = $value;
+    }
+
     public function get()
     {
         $args = [$this->format];
@@ -95,6 +111,18 @@ class TimeCode {
         }
 
         return call_user_func_array('sprintf', $args);
+    }
+
+    public function timeIn( $unit )
+    {
+        $t = $this->time;
+        foreach(self::UNIT_FACTORS as $u => $factor) {
+            $t = $t / $factor;
+            if($u == $unit) {
+                break;
+            }
+        }
+        return $t;
     }
 
     private function toNanoseconds( $t, $u ) {
@@ -116,6 +144,11 @@ class TimeCode {
                 break;
         }
         return ($this->time / $factor);
+    }
+
+    private function setString( $string )
+    {
+        $this->string = $string;
     }
 
     private function setTimecodes()
@@ -145,5 +178,24 @@ class TimeCode {
                 implode(', ', array_keys(self::UNIT_FACTORS))
             )
         );
+    }
+
+    public static function fromString( $string, $units, $format )
+    {
+        $n = sscanf($string, $format);
+        if( count($n) != count($units) ) {
+            throw new \Exception(sprintf(
+                'Array length of format string (%d) must be the same as the units provided (%d)', count($n), count($units)
+            ));
+        }
+
+        $units = array_combine($units, $n);
+        $timecode = new self();
+        foreach( $units as $unit => $value ) {
+            $timecode->set($unit, $value);
+        }
+
+        $timecode->atomicTime();
+        return $timecode;
     }
 }
